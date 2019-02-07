@@ -106,6 +106,17 @@ options:
     required: false
     type: list of path
     default: none
+  callback:
+    description:
+      - The the jsnapy callback function whether to print original output, new
+        output with with the jsnapy error messages, or new output with jsnapy 
+        error and info messages defined in the test.
+    required: false
+    type: str
+    choices:
+      - error
+      - info
+    default: none 
 '''
 
 
@@ -214,6 +225,7 @@ from ansible.module_utils import juniper_junos_common
 
 def main():
     JSNAPY_ACTION_CHOICES = ['check', 'snapcheck', 'snap_pre', 'snap_post']
+    JSNAPY_CALLBACK_OPTIONS = ['error', 'info']
 
     # Create the module instance.
     junos_module = juniper_junos_common.JuniperJunosModule(
@@ -231,7 +243,11 @@ def main():
             dir=dict(required=False,
                      type='path',
                      aliases=['directory'],
-                     default='/etc/jsnapy/testfiles')),
+                     default='/etc/jsnapy/testfiles'),
+            callback=dict(required=False,
+                           choices=JSNAPY_CALLBACK_OPTIONS,
+                           type='str',
+                           default=None)),
         # Mutually exclusive options.
         mutually_exclusive=[['test_files', 'config_file']],
         # One of test_files or config_file is required.
